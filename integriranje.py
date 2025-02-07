@@ -56,19 +56,32 @@ def gauss_legendre(f, a, b, n):
         integral += w[i] * f(mid + h * x[i])
     return integral * h
 
-# Metoda za izbor najbolje metode na osnovu vrste funkcije
-def odaberi_metodu(f, a, b, n=1000):  # Dodan parametar za broj podintervala
+def odaberi_metodu(f, a, b, n=1000):
     try:
         test_value = f((a + b) / 2)
-        if np.isnan(test_value):  # Ako je funkcija NaN (neodređena vrijednost)
-            return None
+        if np.isnan(test_value):
+            return None, "Funkcija ima neodređene vrijednosti (NaN)"
         
-        # Provjera vrste funkcije: ako je polinom, koristit ćemo Simpsonovu metodu
-        if np.allclose(f(a), f(b)):  # Ako su vrijednosti funkcije na krajevima intervala iste
-            return simpsonova_formula(f, a, b, n)  # Koristi Simpsonovu metodu
-        else:
-            return trapezna_formula(f, a, b, n)  # Ako nije polinom, koristi trapeznu metodu
+        # Konvertiramo funkciju u string radi lakše provjere tipa funkcije
+        function_str = str(f)
+
+        # Provjera za polinome (Simpsonova metoda)
+        if 'x**' in function_str or 'x^' in function_str:
+            return simpsonova_formula(f, a, b, n), "Koristim Simpsonovu metodu jer je funkcija polinom"
+        
+        # Provjera za trigonometrijske funkcije (Gauss-Legendreova metoda)
+        if 'sin' in function_str or 'cos' in function_str or 'tan' in function_str:
+            return gauss_legendre(f, a, b, 2), "Koristim Gauss-Legendreovu metodu jer funkcija sadrži trigonometrijske funkcije"
+        
+        # Provjera za eksponencijalne funkcije (Midpoint formula)
+        if 'exp' in function_str or 'e**' in function_str:
+            return midpoint_formula(f, a, b, n), "Koristim Metodu srednje tačke jer funkcija sadrži eksponencijalne funkcije"
+        
+        # Provjera za logaritamske funkcije (Rombergov algoritam)
+        if 'log' in function_str or 'ln' in function_str:
+            return romberg(f, a, b), "Koristim Rombergov algoritam jer funkcija sadrži logaritamske funkcije"
+
+        # Ako nijedna od specifičnih metoda nije odgovarajuća, koristi Trapeznu metodu
+        return trapezna_formula(f, a, b, n), "Koristim Trapeznu metodu jer funkcija ne spada u prepoznate kategorije"
     except Exception as e:
-        print(f"Greška u odabiru metode: {e}")
-        return None
-    
+        return None, f"Greška u odabiru metode: {e}"
