@@ -1,5 +1,4 @@
-# gui.py
-from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QRadioButton, QHBoxLayout, QFormLayout
+from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QRadioButton, QHBoxLayout, QFormLayout, QScrollArea
 from diferenciranje import diferenciraj
 from integriranje import odaberi_metodu
 import matplotlib.pyplot as plt
@@ -9,16 +8,25 @@ from sympy import sympify, symbols, integrate
 class Ui_MainWindow:
     def __init__(self, MainWindow):
         self.window = MainWindow
+
+        # Glavni widget i layout
+        self.central_widget = QWidget()
+        self.scroll_area = QScrollArea(self.central_widget)
+        self.scroll_area.setWidgetResizable(True)
+        
+        self.scroll_content = QWidget()
+        self.scroll_layout = QVBoxLayout(self.scroll_content)
+        self.scroll_area.setWidget(self.scroll_content)
+        
+        self.window.setCentralWidget(self.scroll_area)
+
         self.layout = QVBoxLayout()
 
-        # Podesavanje stila
         self.window.setWindowTitle("Numerički Kalkulator")
         self.window.resize(400, 600)
 
-        # Organizacija layouta
         form_layout = QFormLayout()
 
-        # Unos funkcije
         self.function_input = QLineEdit()
         self.function_input.setPlaceholderText("Unesite funkciju (npr. x^2 + 3*x + 2)")
         self.function_input.setStyleSheet("font-size: 18px; padding: 10px;")
@@ -35,11 +43,10 @@ class Ui_MainWindow:
         self.interval_end_input.setStyleSheet("font-size: 18px; padding: 10px;")
         form_layout.addRow("Kraj intervala:", self.interval_end_input)
 
-        # Dodavanje form layouta u glavni layout
         self.layout.addLayout(form_layout)
 
         # Dugme za diferenciranje
-        self.dif_button = QPushButton("Diferenciranje")
+        self.dif_button = QPushButton("Eulerova metoda")
         self.dif_button.setStyleSheet("font-size: 18px; padding: 10px;")
         self.dif_button.clicked.connect(self.diferenciraj)
         self.layout.addWidget(self.dif_button)
@@ -67,26 +74,14 @@ class Ui_MainWindow:
         self.plot_button.clicked.connect(self.plot_graph)
         self.layout.addWidget(self.plot_button)
 
-        # Dodajemo opcije za odabir integrala
-        self.integration_type_layout = QHBoxLayout()
-        self.definite_radio = QRadioButton("Određeni integral")
-        self.definite_radio.setStyleSheet("font-size: 18px; padding: 10px;")
-        self.indefinite_radio = QRadioButton("Neodređeni integral")
-        self.indefinite_radio.setStyleSheet("font-size: 18px; padding: 10px;")
-        self.definite_radio.setChecked(True)
-        self.integration_type_layout.addWidget(self.definite_radio)
-        self.integration_type_layout.addWidget(self.indefinite_radio)
-        self.layout.addLayout(self.integration_type_layout)
-
-        container = QWidget()
-        container.setLayout(self.layout)
-        self.window.setCentralWidget(container)  # Postavljamo centralni widget
+        self.scroll_layout.addLayout(self.layout)
 
     def diferenciraj(self):
         function_str = self.function_input.text()
         try:
-            result = diferenciraj(function_str)
-            self.result_label.setText(f"Diferencijal: {result}")
+            x_vals, y_vals = diferenciraj(function_str)
+            result_str = "\n".join([f"x: {x:.2f}, y: {y:.2f}" for x, y in zip(x_vals, y_vals)])
+            self.result_label.setText(f"Rezultati:\n{result_str}")
         except Exception as e:
             self.result_label.setText(f"Greška: {str(e)}")
 
@@ -124,7 +119,6 @@ class Ui_MainWindow:
             interval_start_str = self.interval_start_input.text()
             interval_end_str = self.interval_end_input.text()
 
-            # Postavimo podrazumevane intervale ako nisu uneseni
             if not interval_start_str:
                 interval_start_str = "-10"
             if not interval_end_str:

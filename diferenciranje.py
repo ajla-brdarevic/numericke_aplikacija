@@ -1,21 +1,25 @@
+import numpy as np
+
 def diferenciraj(function_str):
-    def deriviraj_polynomial(term):
-        if '^' in term:
-            base, exponent = term.split('^')
-            new_exponent = int(exponent) - 1
-            coefficient = int(base.split('*')[0]) if '*' in base else 1
-            new_coefficient = coefficient * int(exponent)
-            return f"{new_coefficient}*x^{new_exponent}" if new_exponent != 0 else f"{new_coefficient}"
-        elif 'x' in term:
-            coefficient = int(term.replace('*x', '').replace(' ', '')) if '*x' in term else 1
-            return str(coefficient)
-        else:
-            return "0"
+    def dydx(x, y):
+        return eval(function_str.replace('^', '**'))
 
-    terms = function_str.replace(' ', '').replace('-', '+-').split('+')
-    derivative_terms = [deriviraj_polynomial(term) for term in terms if term]
+    x0 = 0  # Početna vrijednost za x
+    y0 = 1  # Početna vrijednost za y
+    x_end = 10  # Krajnja vrijednost za x
+    step_size = 0.1  # Veličina koraka
 
-    return ' + '.join([term for term in derivative_terms if term != "0"])
-
-# Testiranje funkcije
-print(diferenciraj("4*x^3 - 2*x^2 + x"))
+    x_vals = [x0]
+    y_vals = [y0]
+    
+    x = x0
+    y = y0
+    
+    while x < x_end:
+        y = y + step_size * dydx(x, y)
+        x = x + step_size
+        
+        x_vals.append(x)
+        y_vals.append(y)
+    
+    return np.array(x_vals), np.array(y_vals)
