@@ -20,18 +20,18 @@ class Ui_MainWindow:
 
         # Unos funkcije
         self.function_input = QLineEdit()
-        self.function_input.setPlaceholderText("Unesite funkciju (npr. x**2 + 3*x + 2)")
+        self.function_input.setPlaceholderText("Unesite funkciju (npr. x^2 + 3*x + 2)")
         self.function_input.setStyleSheet("font-size: 18px; padding: 10px;")
         form_layout.addRow("Funkcija:", self.function_input)
 
         # Unos intervala
         self.interval_start_input = QLineEdit()
-        self.interval_start_input.setPlaceholderText("Unesite početak intervala (npr. -10)")
+        self.interval_start_input.setPlaceholderText("Unesite početak intervala:")
         self.interval_start_input.setStyleSheet("font-size: 18px; padding: 10px;")
         form_layout.addRow("Početak intervala:", self.interval_start_input)
 
         self.interval_end_input = QLineEdit()
-        self.interval_end_input.setPlaceholderText("Unesite kraj intervala (npr. 10)")
+        self.interval_end_input.setPlaceholderText("Unesite kraj intervala:")
         self.interval_end_input.setStyleSheet("font-size: 18px; padding: 10px;")
         form_layout.addRow("Kraj intervala:", self.interval_end_input)
 
@@ -39,13 +39,13 @@ class Ui_MainWindow:
         self.layout.addLayout(form_layout)
 
         # Dugme za diferenciranje
-        self.dif_button = QPushButton("Diferenciraj")
+        self.dif_button = QPushButton("Diferenciranje")
         self.dif_button.setStyleSheet("font-size: 18px; padding: 10px;")
         self.dif_button.clicked.connect(self.diferenciraj)
         self.layout.addWidget(self.dif_button)
 
         # Dugme za integriranje
-        self.int_button = QPushButton("Integriraj")
+        self.int_button = QPushButton("Određeni integral")
         self.int_button.setStyleSheet("font-size: 18px; padding: 10px;")
         self.int_button.clicked.connect(self.integriraj)
         self.layout.addWidget(self.int_button)
