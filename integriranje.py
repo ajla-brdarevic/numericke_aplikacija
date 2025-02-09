@@ -35,10 +35,8 @@ def odaberi_metodu(f, a, b, n=1000):
         if np.isnan(test_value):
             return None, "Funkcija ima neodređene vrijednosti (NaN)"
         
-        # Konvertiramo funkciju u string radi lakše provjere tipa funkcije
-        function_str = str(f)
-
         # Provjera za polinome (Simpsonova metoda)
+        function_str = str(f)
         if 'x**' in function_str or 'x^' in function_str:
             return simpsonova_formula(f, a, b, n), "Koristim Simpsonovu metodu jer je funkcija polinom"
         

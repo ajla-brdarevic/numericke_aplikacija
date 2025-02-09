@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QRadioButton, QHBoxLayout, QFormLayout, QScrollArea
 from diferenciranje import diferenciraj
-from integriranje import odaberi_metodu
+from integriranje import odaberi_metodu, trapezna_formula, simpsonova_formula, midpoint_formula
 import matplotlib.pyplot as plt
 import numpy as np
 from sympy import sympify, symbols, integrate
@@ -51,18 +51,30 @@ class Ui_MainWindow:
         self.dif_button.clicked.connect(self.diferenciraj)
         self.layout.addWidget(self.dif_button)
 
-        # Dugme za integriranje
-        self.int_button = QPushButton("Određeni integral")
-        self.int_button.setStyleSheet("font-size: 18px; padding: 10px;")
-        self.int_button.clicked.connect(self.integriraj)
-        self.layout.addWidget(self.int_button)
+        # Dugme za integriranje (Trapezna metoda)
+        self.int_trap_button = QPushButton("Trapezna metoda")
+        self.int_trap_button.setStyleSheet("font-size: 18px; padding: 10px;")
+        self.int_trap_button.clicked.connect(self.trapezna)
+        self.layout.addWidget(self.int_trap_button)
 
-        # Dugme za integriranje neodređenog integrala
-        self.indefinite_int_button = QPushButton("Neodređeni integral")
-        self.indefinite_int_button.setStyleSheet("font-size: 18px; padding: 10px;")
-        self.indefinite_int_button.clicked.connect(self.neodredjeni_integral)
+        # Dugme za integriranje (Simpsonova metoda)
+        self.int_simp_button = QPushButton("Simpsonova metoda")
+        self.int_simp_button.setStyleSheet("font-size: 18px; padding: 10px;")
+        self.int_simp_button.clicked.connect(self.simpsonova)
+        self.layout.addWidget(self.int_simp_button)
+
+        # Dugme za integriranje (Midpoint metoda)
+        self.int_mid_button = QPushButton("Midpoint metoda")
+        self.int_mid_button.setStyleSheet("font-size: 18px; padding: 10px;")
+        self.int_mid_button.clicked.connect(self.midpoint)
+        self.layout.addWidget(self.int_mid_button)
+        
+        # Dugme za integriranje neodređenog integrala 
+        self.indefinite_int_button = QPushButton("Neodređeni integral") 
+        self.indefinite_int_button.setStyleSheet("font-size: 18px; padding: 10px;") 
+        self.indefinite_int_button.clicked.connect(self.neodredjeni_integral) 
         self.layout.addWidget(self.indefinite_int_button)
-
+        
         # Prikaz rezultata
         self.result_label = QLabel("Rezultat će biti prikazan ovdje.")
         self.result_label.setStyleSheet("font-size: 18px; padding: 10px;")
@@ -85,7 +97,16 @@ class Ui_MainWindow:
         except Exception as e:
             self.result_label.setText(f"Greška: {str(e)}")
 
-    def integriraj(self):
+    def trapezna(self):
+        self.integriraj_metoda(trapezna_formula)
+
+    def simpsonova(self):
+        self.integriraj_metoda(simpsonova_formula)
+
+    def midpoint(self):
+        self.integriraj_metoda(midpoint_formula)
+
+    def integriraj_metoda(self, metoda):
         function_str = self.function_input.text()
         interval_start = float(self.interval_start_input.text())
         interval_end = float(self.interval_end_input.text())
@@ -94,7 +115,7 @@ class Ui_MainWindow:
             func = sympify(function_str)
             f = lambda x_val: float(func.subs('x', x_val))
 
-            result, _ = odaberi_metodu(f, interval_start, interval_end)  # Ignoriramo poruku metode
+            result = metoda(f, interval_start, interval_end, 1000)  # Defaultni broj podintervala je 1000
             self.result_label.setText(f"Rezultat integrala: {result}")
         except Exception as e:
             self.result_label.setText(f"Greška: {str(e)}")
